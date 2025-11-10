@@ -1,11 +1,18 @@
 # ekpc_lstm_app.py
 
 import streamlit as st
-from tensorflow.keras.models import load_model
+import tensorflow as tf
+from tensorflow import keras
 import numpy as np
 
 # 1. Load trained LSTM model
-model = load_model("ekpc_lstm_model.h5")
+try:
+    model = keras.models.load_model("ekpc_lstm_model.h5", compile=False)
+    # Recompile the model with basic configuration
+    model.compile(optimizer='adam', loss='mse')
+except Exception as e:
+    st.error(f"Error loading model: {str(e)}")
+    st.stop()
 
 st.title("EKPC Load Forecasting (LSTM)")
 

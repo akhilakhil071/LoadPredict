@@ -2,6 +2,8 @@
 
 import pandas as pd
 import numpy as np
+import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 
@@ -29,10 +31,14 @@ X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
 # 5. Build LSTM model
-model = Sequential()
-model.add(LSTM(50, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2])))
-model.add(Dense(1))
-model.compile(optimizer='adam', loss='mse')
+model = Sequential([
+    LSTM(50, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2]), return_sequences=False),
+    Dense(1)
+])
+
+# Compile with explicit optimizer configuration
+optimizer = keras.optimizers.Adam(learning_rate=0.001)
+model.compile(optimizer=optimizer, loss='mse')
 
 # 6. Train model
 model.fit(X_train, y_train, epochs=20, batch_size=32, verbose=1)
@@ -45,5 +51,5 @@ print(f"Mean Absolute Error: {mae:.2f}")
 print(f"R² Score: {r2:.2f}")
 
 # 8. Save trained model
-model.save("ekpc_lstm_model.h5")
+model.save("ekpc_lstm_model.h5", save_format='h5')
 print("Model saved as ekpc_lstm_model.h5")
